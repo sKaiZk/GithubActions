@@ -23,7 +23,7 @@ jobs:
         run: |
           # Asegúrate de que el JAR está en la raíz con este nombre:
           ls -la
-          java -jar openapi-generator-cli.jar generate -i api.yaml -g pythonflask -o ./openapi_server
+          java -jar openapi-generator-cli.jar generate -i api.yaml -g python-flask -o ./openapi_server
 
       - name: Comprimir el resultado
         run: |
