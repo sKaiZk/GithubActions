@@ -1,0 +1,36 @@
+name: Generar código OpenAPI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generar-codigo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17 (Temurin)
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generar código con openapi-generator-cli
+        run: |
+          # Asegúrate de que el JAR está en la raíz con este nombre:
+          ls -la
+          java -jar openapi-generator-cli.jar generate -i api.yaml -g pythonflask -o ./openapi_server
+
+      - name: Comprimir el resultado
+        run: |
+          zip -r openapi_server.zip openapi_server
+
+      - name: Subir artefacto (openapi_server.zip)
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi_server
+          path: openapi_server.zip
