@@ -3,7 +3,7 @@ name: Generar código OpenAPI
 on:
   push:
     branches:
-      - main
+      - ejercicio3
 
 jobs:
   generar-codigo:
