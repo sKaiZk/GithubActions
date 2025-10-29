@@ -1,0 +1,210 @@
+openapi: 3.0.4
+info:
+  title: Proveedor de Pistas (PP)
+  description: |-
+    Esta es la documentación para la API del Microservicio de Proveedor de Pistas (PP) del proyecto OverSounds.
+  version: 1.0.0
+externalDocs:
+  description: Acceso a GitHub
+  url: https://example.com
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: track
+    description: Access to tracks
+    
+paths:
+  /track/{trackId}:
+    get:
+      tags:
+        - track
+      summary: Gets a track info by Id
+      operationId: getTrack
+      parameters:
+        - name: trackId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Track not found
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bandcamp_auth:
+            - read:tracks
+    patch:
+      tags:
+        - track
+      summary: Updates a track from the database with form data.
+      operationId: updateTrack
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+        - name: trackId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bandcamp_auth:
+            - write:tracks
+            - read:tracks
+    delete:
+      tags:
+        - track
+      summary: Deletes a track.
+      operationId: deleteTrack
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+        - name: trackId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+        '204':
+          description: No Content, track deleted
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bandcamp_auth:
+            - write:tracks
+            - read:tracks
+  /track/upload:
+    post:
+      tags:
+        - track
+      summary: Add a new track to the database
+      operationId: addTrack
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Track'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Track'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception        
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      security:
+        - bandcamp_auth:
+            - write:tracks
+
+components:
+  schemas:
+    Track:
+      type: object
+      required:
+        - id
+        - binary
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        binary:
+          type: string
+          format: byte
+          example: "U29uZyBUaXRsZSBieSBBcnRpc3Q="
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+  requestBodies:
+    Track:
+      description: Track object that needs to be added or updated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Track'
+
+  securitySchemes:
+    bandcamp_auth:
+      type: apiKey
+      in: cookie
+      name: token
+
+
